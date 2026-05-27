@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lab_background">#10161C</color>
+    <color name="lab_surface">#18212A</color>
+    <color name="lab_hero">#0C1218</color>
+    <color name="lab_hero_secondary">#ADBBC8</color>
+    <color name="lab_text_primary">#EFF4F8</color>
+    <color name="lab_text_secondary">#A4B2BE</color>
+    <color name="lab_accent">#54C4AB</color>
+    <color name="lab_accent_soft">#173A34</color>
+    <color name="lab_planned">#F2B361</color>
+    <color name="lab_planned_soft">#3C2C17</color>
+    <color name="lab_badge_coroutine">#183C35</color>
+    <color name="lab_badge_lock">#222F4E</color>
+    <color name="lab_badge_ui">#482725</color>
+    <color name="lab_badge_network">#44321E</color>
+    <color name="lab_border">#28343F</color>
+</resources>

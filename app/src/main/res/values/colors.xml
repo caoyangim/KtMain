@@ -7,4 +7,20 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="lab_background">#F5F7FA</color>
+    <color name="lab_surface">#FFFFFFFF</color>
+    <color name="lab_hero">#17212B</color>
+    <color name="lab_hero_secondary">#AEBCCA</color>
+    <color name="lab_hero_rule">#314252</color>
+    <color name="lab_text_primary">#15202B</color>
+    <color name="lab_text_secondary">#607080</color>
+    <color name="lab_accent">#087F6A</color>
+    <color name="lab_accent_soft">#E1F3EE</color>
+    <color name="lab_planned">#9A5B16</color>
+    <color name="lab_planned_soft">#FEF0DB</color>
+    <color name="lab_badge_coroutine">#E2F1ED</color>
+    <color name="lab_badge_lock">#E7EDFF</color>
+    <color name="lab_badge_ui">#FDE9E7</color>
+    <color name="lab_badge_network">#FFF0D8</color>
+    <color name="lab_border">#E4E9EE</color>
 </resources>
