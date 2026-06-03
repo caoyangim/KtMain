@@ -17,6 +17,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".SyncInterruptActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".HomeActivity"
             android:exported="true">
             <intent-filter>

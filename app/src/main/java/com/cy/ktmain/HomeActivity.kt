@@ -32,7 +32,8 @@ class HomeActivity : AppCompatActivity() {
             badge = R.string.module_lock_badge,
             badgeBackground = R.drawable.bg_badge_lock,
             status = ModuleStatus.READY,
-            detail = R.string.module_lock_detail
+            detail = R.string.module_lock_detail,
+            destination = SyncInterruptActivity::class.java
         ),
         LabModule(
             title = R.string.module_ui_title,

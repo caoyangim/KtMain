@@ -106,7 +106,7 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <NumberPicker
+                    <com.cy.ktmain.CyNumberPicker
                         android:id="@+id/nativePicker"
                         android:layout_width="match_parent"
                         android:layout_height="178dp"
@@ -180,26 +180,11 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <FrameLayout
+                    <com.cy.ktmain.RvNumberPicker
+                        android:id="@+id/recyclerPicker"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:layout_marginTop="12dp">
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="56dp"
-                            android:layout_gravity="center_vertical"
-                            android:background="@drawable/bg_picker_selection" />
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recyclerPicker"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:clipToPadding="false"
-                            android:overScrollMode="never"
-                            android:paddingTop="72dp"
-                            android:paddingBottom="72dp" />
-                    </FrameLayout>
+                        android:layout_marginTop="12dp" />
 
                     <TextView
                         android:layout_width="match_parent"
