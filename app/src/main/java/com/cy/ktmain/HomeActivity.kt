@@ -45,6 +45,24 @@ class HomeActivity : AppCompatActivity() {
             destination = NumberPickerActivity::class.java
         ),
         LabModule(
+            title = R.string.module_bluetooth_title,
+            description = R.string.module_bluetooth_description,
+            badge = R.string.module_bluetooth_badge,
+            badgeBackground = R.drawable.bg_badge_bluetooth,
+            status = ModuleStatus.READY,
+            detail = R.string.module_bluetooth_detail,
+            destination = BluetoothTileActivity::class.java
+        ),
+        LabModule(
+            title = R.string.module_carousel_title,
+            description = R.string.module_carousel_description,
+            badge = R.string.module_carousel_badge,
+            badgeBackground = R.drawable.bg_badge_carousel,
+            status = ModuleStatus.READY,
+            detail = R.string.module_carousel_detail,
+            destination = CarouselActivity::class.java
+        ),
+        LabModule(
             title = R.string.module_network_title,
             description = R.string.module_network_description,
             badge = R.string.module_network_badge,
