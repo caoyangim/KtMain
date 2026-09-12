@@ -71,6 +71,7 @@
 
             <!-- Carousel Display Container -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/carouselContainerCard"
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
                 android:layout_marginTop="20dp"
@@ -280,7 +281,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:lineSpacingExtra="4dp"
-                        android:text="1. 三项视效（小-中-小）：将 Item 宽度设为容器的 52%，结合左右各 (W-w)/2 内边距，使中间项居中占主导，两侧各留出约 26% 视野。\n\n2. 动态缩放：在 OnScrollListener 中实时计算各 View 距离中心点的偏移，根据距离插值设置 scaleX/scaleY (0.78 - 1.0) 及 alpha。\n\n3. 横向无限滚动：Adapter 虚拟项数使用 Int.MAX_VALUE，初始定位至中间段数值偏移，并通过取模计算实际数据项；使用 LinearSnapHelper 实现平滑对齐。"
+                        android:text="1. 精准三项展示：将 Item 宽度设为容器的 1/3 (33.33%)，内边距设为 1/3 W，结合 LinearSnapHelper 居中对齐，确保屏幕完全展示且只展示左-中-右 3 项。\n\n2. 动态缩放与隐入：在 OnScrollListener 中实时计算 View 距离中心点的偏移，中心 View 设置 1.0 比例，两侧 View 设置 0.88 比例与透明度；超出一屏范围项透明度设为 0，防止多余 Item 露头。\n\n3. 横向无限滚动：Adapter 虚拟项数使用 Int.MAX_VALUE，初始定位至中间段数值偏移，并通过取模计算实际数据项。"
                         android:textColor="@color/lab_text_secondary"
                         android:textSize="13sp" />
                 </LinearLayout>

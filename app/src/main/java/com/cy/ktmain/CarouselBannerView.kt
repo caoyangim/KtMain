@@ -113,6 +113,7 @@ class CarouselBannerView @JvmOverloads constructor(
         val itemWidth = (w * ITEM_WIDTH_PERCENT).toInt()
         val horizontalPadding = (w - itemWidth) / 2
         recyclerView.setPadding(horizontalPadding, 0, horizontalPadding, 0)
+        adapter.notifyDataSetChanged()
 
         post {
             if (currentPosition >= 0 && items.isNotEmpty()) {
@@ -145,7 +146,7 @@ class CarouselBannerView @JvmOverloads constructor(
         } else {
             0
         }
-        currentPosition = 3
+        currentPosition = centerOffset
 
         recyclerView.scrollToPosition(centerOffset)
         post {
@@ -273,27 +274,39 @@ class CarouselBannerView @JvmOverloads constructor(
 
     private fun updateItemTransforms() {
         val width = recyclerView.width
-        if (width <= 0) return
+        if (width <= 0 || items.isEmpty()) return
 
         val centerX = width / 2f
         val itemWidth = width * ITEM_WIDTH_PERCENT
-        val maxDistance = itemWidth
+        if (itemWidth <= 0f) return
 
         for (i in 0 until recyclerView.childCount) {
             val child = recyclerView.getChildAt(i)
             val childCenterX = (child.left + child.right) / 2f
             val distance = abs(centerX - childCenterX)
 
-            val factor = (1f - distance / maxDistance).coerceIn(0f, 1f)
+            val factor = (1f - distance / itemWidth).coerceIn(0f, 1f)
 
             val scale = MIN_SCALE + (MAX_SCALE - MIN_SCALE) * factor
+
+            // 设置缩放基准点：X 为水平中心，Y 为顶部颜色卡片的中心点
+            val cardBg = child.findViewById<View>(R.id.cardBackground)
+            if (cardBg != null && cardBg.height > 0) {
+                child.pivotX = child.width / 2f
+                child.pivotY = cardBg.top + cardBg.height / 2f
+            } else {
+                child.pivotX = child.width / 2f
+                child.pivotY = child.height / 2f
+            }
+
             child.scaleX = scale
             child.scaleY = scale
 
-            val alpha = if (distance <= maxDistance) {
+            val alpha = if (distance <= itemWidth) {
                 MIN_ALPHA + (1f - MIN_ALPHA) * factor
             } else {
-                MIN_ALPHA * (1f - (distance - maxDistance) / (maxDistance * 0.6f)).coerceIn(0f, 1f)
+                val fadeOutFactor = (1f - (distance - itemWidth) / itemWidth).coerceIn(0f, 1f)
+                MIN_ALPHA * fadeOutFactor
             }
             child.alpha = alpha
 
@@ -389,6 +402,13 @@ class CarouselBannerView @JvmOverloads constructor(
             if (items.isEmpty()) return
             val realIndex = getRealIndexForPosition(position)
             holder.bind(items[realIndex], realIndex, position)
+
+            val parentWidth = recyclerView.width.takeIf { it > 0 } ?: recyclerView.resources.displayMetrics.widthPixels
+            val targetWidth = (parentWidth * ITEM_WIDTH_PERCENT).toInt()
+            if (holder.itemView.layoutParams.width != targetWidth) {
+                holder.itemView.layoutParams.width = targetWidth
+                holder.itemView.requestLayout()
+            }
             recyclerView.post { updateItemTransforms() }
         }
 
@@ -413,7 +433,7 @@ class CarouselBannerView @JvmOverloads constructor(
                     GradientDrawable.Orientation.TL_BR,
                     intArrayOf(item.startColor, item.endColor)
                 ).apply {
-                    cornerRadius = 20f * itemView.resources.displayMetrics.density
+                    cornerRadius = 12f * itemView.resources.displayMetrics.density
                 }
                 cardBackground.background = gradient
 
@@ -430,9 +450,9 @@ class CarouselBannerView @JvmOverloads constructor(
     }
 
     private companion object {
-        const val ITEM_WIDTH_PERCENT = 0.34f
-        const val MIN_SCALE = 0.82f
-        const val MAX_SCALE = 1.08f
-        const val MIN_ALPHA = 0.70f
+        const val ITEM_WIDTH_PERCENT = 1f / 3f
+        const val MIN_SCALE = 0.88f
+        const val MAX_SCALE = 1.00f
+        const val MIN_ALPHA = 0.85f
     }
 }
