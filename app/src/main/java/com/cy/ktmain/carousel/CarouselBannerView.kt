@@ -6,25 +6,18 @@ import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.cy.ktmain.R
-import com.cy.ktmain.compose.CarouselIndicator
-import com.cy.ktmain.widgets.CarouselIndicatorView
 import kotlin.math.abs
 
 data class CarouselItem(
@@ -36,6 +29,12 @@ data class CarouselItem(
     val endColor: Int
 )
 
+/**
+ * 独立的 CarouselBannerView 核心控件：
+ * 专注于 Banner 卡片的横向无限滚动、居中 Snap 对齐与动态 3D 缩放。
+ * 指示器（如 CarouselArcIndicatorView、CarouselIndicatorView 等）作为完全独立的外部控件，
+ * 通过 [setOnScrollProgressListener] 接收滑动进度。
+ */
 class CarouselBannerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -45,10 +44,6 @@ class CarouselBannerView @JvmOverloads constructor(
     private val recyclerView = RecyclerView(context)
     private val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
     private val snapHelper = LinearSnapHelper()
-    private val indicatorView = CarouselIndicatorView(context)
-    private val composeIndicatorView = ComposeView(context)
-    private val composeProgressState = mutableStateOf(Triple(0, 0, 0f))
-    private val composeCountState = mutableIntStateOf(0)
 
     private val handler = Handler(Looper.getMainLooper())
     private var autoScrollRunnable: Runnable? = null
@@ -61,6 +56,7 @@ class CarouselBannerView @JvmOverloads constructor(
 
     private var onItemClickListener: ((CarouselItem, Int) -> Unit)? = null
     private var onPageChangeListener: ((adapterPosition: Int, realIndex: Int) -> Unit)? = null
+    private var onScrollProgressListener: ((currentIndex: Int, nextIndex: Int, progress: Float) -> Unit)? = null
 
     private val adapter = CarouselAdapter()
 
@@ -96,62 +92,6 @@ class CarouselBannerView @JvmOverloads constructor(
         }
         snapHelper.attachToRecyclerView(recyclerView)
         addView(recyclerView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
-
-        setupIndicatorContainer()
-    }
-
-    private fun setupIndicatorContainer() {
-        val indicatorsContainer = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER_HORIZONTAL
-        }
-
-        val indicatorLp = LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.WRAP_CONTENT
-        ).apply {
-            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            bottomMargin = (8 * resources.displayMetrics.density).toInt()
-        }
-
-        composeIndicatorView.setContent {
-            val (curr, next, prog) = composeProgressState.value
-            val count = composeCountState.intValue
-            CarouselIndicator(
-                count = count,
-                currentIndex = curr,
-                nextIndex = next,
-                progress = prog
-            )
-        }
-
-        val space = View(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                (4 * resources.displayMetrics.density).toInt()
-            )
-        }
-
-        val childLp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
-            gravity = Gravity.CENTER_HORIZONTAL
-        }
-
-        indicatorsContainer.addView(indicatorView, childLp)
-        indicatorsContainer.addView(space)
-        indicatorsContainer.addView(
-            composeIndicatorView,
-            LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = Gravity.CENTER_HORIZONTAL
-            }
-        )
-
-        addView(indicatorsContainer, indicatorLp)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -210,6 +150,16 @@ class CarouselBannerView @JvmOverloads constructor(
 
     fun setOnPageChangeListener(listener: (adapterPosition: Int, realIndex: Int) -> Unit) {
         this.onPageChangeListener = listener
+    }
+
+    /**
+     * 设置指示器滑动进度监听器（独立的指示器通过该回调联动）
+     */
+    fun setOnScrollProgressListener(listener: (currentIndex: Int, nextIndex: Int, progress: Float) -> Unit) {
+        this.onScrollProgressListener = listener
+        if (items.isNotEmpty()) {
+            updateIndicators()
+        }
     }
 
     fun startAutoScroll() {
@@ -393,7 +343,7 @@ class CarouselBannerView @JvmOverloads constructor(
         }
 
         val count = items.size
-        if (count > 1 && maxFactorChildPos != RecyclerView.NO_POSITION) {
+        if (count > 0 && maxFactorChildPos != RecyclerView.NO_POSITION) {
             val currentRealIndex = getRealIndexForPosition(maxFactorChildPos)
             val nextRealIndex = if (maxFactorChildOffset >= 0) {
                 (currentRealIndex + 1) % count
@@ -401,17 +351,13 @@ class CarouselBannerView @JvmOverloads constructor(
                 (currentRealIndex - 1 + count) % count
             }
             val progress = (1f - maxFactor).coerceIn(0f, 1f)
-            indicatorView.setScrollProgress(currentRealIndex, nextRealIndex, progress)
-            composeProgressState.value = Triple(currentRealIndex, nextRealIndex, progress)
-            composeCountState.intValue = count
+            onScrollProgressListener?.invoke(currentRealIndex, nextRealIndex, progress)
         }
     }
 
     private fun updateIndicators() {
-        indicatorView.count = items.size
-        indicatorView.setSelection(getCurrentRealIndex())
-        composeCountState.intValue = items.size
-        composeProgressState.value = Triple(getCurrentRealIndex(), getCurrentRealIndex(), 0f)
+        val curr = getCurrentRealIndex()
+        onScrollProgressListener?.invoke(curr, curr, 0f)
     }
 
     private fun notifyPageChanged() {

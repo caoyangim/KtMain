@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColorInt
 import com.cy.ktmain.R
 import com.cy.ktmain.utils.setupEdgeToEdgeInsets
+import com.cy.ktmain.widgets.CarouselArcIndicatorView
+import com.cy.ktmain.widgets.CarouselIndicatorView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 
@@ -29,6 +31,9 @@ class CarouselActivity : AppCompatActivity() {
         }
 
         carouselBannerView = findViewById(R.id.carouselBanner)
+        val arcIndicator = findViewById<CarouselArcIndicatorView>(R.id.carouselArcIndicator)
+        val classicIndicator = findViewById<CarouselIndicatorView>(R.id.carouselClassicIndicator)
+
         statusText = findViewById(R.id.carouselStatusText)
         btnToggleAutoScroll = findViewById(R.id.btnToggleAutoScroll)
 
@@ -72,11 +77,63 @@ class CarouselActivity : AppCompatActivity() {
                 tag = "CARD 05",
                 startColor = "#E65100".toColorInt(),
                 endColor = "#FB8C00".toColorInt()
+            ),
+            CarouselItem(
+                id = 6,
+                title = "AppFunctions & AI",
+                subtitle = "系统级 Agent 指令对接与端侧 AI 调度",
+                tag = "CARD 06",
+                startColor = "#311B92".toColorInt(),
+                endColor = "#5E35B1".toColorInt()
+            ),
+            CarouselItem(
+                id = 7,
+                title = "Navigation 3",
+                subtitle = "全新 Scene 与多 Backstack 声明式路由",
+                tag = "CARD 07",
+                startColor = "#004D40".toColorInt(),
+                endColor = "#00796B".toColorInt()
+            ),
+            CarouselItem(
+                id = 8,
+                title = "CameraX Pipeline",
+                subtitle = "生命周期感知与图像流高性能处理",
+                tag = "CARD 08",
+                startColor = "#BF360C".toColorInt(),
+                endColor = "#E64A19".toColorInt()
             )
         )
 
+        // 独立指示器初始化数据
+        arcIndicator.setItems(sampleItems) { it.id.toString() }
+        classicIndicator.count = sampleItems.size
+
+        val tvDirLog = findViewById<TextView>(R.id.tvDirLog)
+        arcIndicator.onDirChangeListener = { dir, continuousRealIndex, progress, currIndex, nxtIndex, tLog ->
+            val dirStatus = when (dir) {
+                +1f -> "+1.0 (正向 / 右滑 ➔)"
+                -1f -> "-1.0 (反向 / 左滑 ⬅)"
+                else -> "0.0 (静止 ⏸)"
+            }
+            tvDirLog.text = getString(
+                R.string.carousel_dir_log_format,
+                dirStatus,
+                currIndex,
+                nxtIndex,
+                continuousRealIndex,
+                progress,
+                tLog
+            )
+        }
+
+        // 独立控件间通过标准事件回调实现完全解耦联动
         carouselBannerView.apply {
             setItems(sampleItems)
+
+            setOnScrollProgressListener { curr, next, progress ->
+                arcIndicator.setScrollProgress(curr, next, progress)
+                classicIndicator.setScrollProgress(curr, next, progress)
+            }
 
             setOnItemClickListener { item, realIndex ->
                 Toast.makeText(

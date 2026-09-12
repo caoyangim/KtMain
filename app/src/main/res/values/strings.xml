@@ -103,4 +103,6 @@
     <string name="carousel_action_jump_pos_max">测试 Pos MAX</string>
     <string name="carousel_toast_invalid_pos">请输入有效的 Position 数值</string>
     <string name="carousel_toast_jumped_pos">已跳转至 Position %1$d</string>
+    <string name="carousel_dir_log_title">实时 Dir 方向算法调试面板</string>
+    <string name="carousel_dir_log_format">dir: %1$s\ncurrentIndex: %2$d | nextIndex: %3$d\ncontinuousRealIndex: %4$.2f\nprogress: %5$.2f\n轨迹 t: %6$s</string>
 </resources>
