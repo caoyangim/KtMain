@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -17,6 +18,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
@@ -174,7 +176,7 @@ class CarouselBannerView @JvmOverloads constructor(
             override fun run() {
                 if (height > 0 && items.size > 1) {
                     currentPosition++
-                    recyclerView.smoothScrollToPosition(currentPosition)
+                    smoothScrollToTargetPosition(currentPosition)
                 }
                 handler.postDelayed(this, autoScrollIntervalMs)
             }
@@ -195,20 +197,20 @@ class CarouselBannerView @JvmOverloads constructor(
     fun scrollToNext() {
         if (items.size <= 1) return
         currentPosition++
-        recyclerView.smoothScrollToPosition(currentPosition)
+        smoothScrollToTargetPosition(currentPosition)
     }
 
     fun scrollToPrevious() {
         if (items.size <= 1) return
         currentPosition--
-        recyclerView.smoothScrollToPosition(currentPosition)
+        smoothScrollToTargetPosition(currentPosition)
     }
 
     fun scrollToAdapterPosition(targetPosition: Int, smoothScroll: Boolean = false) {
         if (items.isEmpty()) return
         currentPosition = targetPosition
         if (smoothScroll) {
-            recyclerView.smoothScrollToPosition(targetPosition)
+            smoothScrollToTargetPosition(targetPosition)
         } else {
             recyclerView.scrollToPosition(targetPosition)
             post {
@@ -234,6 +236,28 @@ class CarouselBannerView @JvmOverloads constructor(
         autoScrollRunnable?.let { handler.removeCallbacks(it) }
         autoScrollRunnable = null
         isAutoScrollRunning = false
+    }
+
+    private fun smoothScrollToTargetPosition(targetPosition: Int) {
+        val smoothScroller = object : LinearSmoothScroller(context) {
+            override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+                // 原生默认速度约为 25f / densityDpi（滑动距离短时只需约 30ms，过快）
+                // 调整为 300f / densityDpi 后，切换 1 个 Card 过程约 400ms，动画流畅清晰
+                return 300f / displayMetrics.densityDpi
+            }
+
+            override fun calculateDtToFit(
+                viewStart: Int,
+                viewEnd: Int,
+                boxStart: Int,
+                boxEnd: Int,
+                snapPreference: Int
+            ): Int {
+                return (boxStart + (boxEnd - boxStart) / 2) - (viewStart + (viewEnd - viewStart) / 2)
+            }
+        }
+        smoothScroller.targetPosition = targetPosition
+        layoutManager.startSmoothScroll(smoothScroller)
     }
 
     private fun snapToPosition(position: Int) {
@@ -440,7 +464,7 @@ class CarouselBannerView @JvmOverloads constructor(
                 itemView.setOnClickListener {
                     if (adapterPosition != currentPosition) {
                         currentPosition = adapterPosition
-                        recyclerView.smoothScrollToPosition(adapterPosition)
+                        smoothScrollToTargetPosition(adapterPosition)
                     } else {
                         onItemClickListener?.invoke(item, realIndex)
                     }
