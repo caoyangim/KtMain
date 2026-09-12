@@ -3,30 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardContainer"
     android:layout_width="wrap_content"
-    android:layout_height="180dp"
-    android:layout_marginTop="12dp"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="6dp"
+    android:layout_height="170dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
     app:strokeWidth="0dp">
 
     <RelativeLayout
         android:id="@+id/cardBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp">
+        android:padding="12dp">
 
         <TextView
             android:id="@+id/cardTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_value_pill"
-            android:paddingStart="10dp"
-            android:paddingTop="3dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="3dp"
+            android:paddingStart="8dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="2dp"
             android:textColor="@color/black"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textStyle="bold" />
 
         <TextView
@@ -34,11 +34,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/cardTag"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="10dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
@@ -46,20 +46,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/cardTitle"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="2"
             android:textColor="#DDF0FF"
-            android:textSize="13sp" />
+            android:textSize="11sp" />
 
         <TextView
-            android:id="@+id/cardBadgeSmall"
+            android:id="@+id/cardRatio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:text="3D SCALE"
-            android:textColor="#80FFFFFF"
+            android:background="@drawable/bg_card_ratio"
+            android:paddingStart="6dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="2dp"
+            android:text="1.00"
+            android:textColor="@color/white"
             android:textSize="10sp"
             android:textStyle="bold" />
     </RelativeLayout>

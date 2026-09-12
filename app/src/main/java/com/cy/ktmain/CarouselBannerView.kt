@@ -277,22 +277,30 @@ class CarouselBannerView @JvmOverloads constructor(
 
         val centerX = width / 2f
         val itemWidth = width * ITEM_WIDTH_PERCENT
-        val maxDistance = itemWidth * 0.95f
+        val maxDistance = itemWidth
 
         for (i in 0 until recyclerView.childCount) {
             val child = recyclerView.getChildAt(i)
             val childCenterX = (child.left + child.right) / 2f
             val distance = abs(centerX - childCenterX)
+
             val factor = (1f - distance / maxDistance).coerceIn(0f, 1f)
 
             val scale = MIN_SCALE + (MAX_SCALE - MIN_SCALE) * factor
             child.scaleX = scale
             child.scaleY = scale
 
-            val alpha = MIN_ALPHA + (1f - MIN_ALPHA) * factor
+            val alpha = if (distance <= maxDistance) {
+                MIN_ALPHA + (1f - MIN_ALPHA) * factor
+            } else {
+                MIN_ALPHA * (1f - (distance - maxDistance) / (maxDistance * 0.6f)).coerceIn(0f, 1f)
+            }
             child.alpha = alpha
 
             child.translationZ = factor * 12f
+
+            val ratioView = child.findViewById<TextView>(R.id.cardRatio)
+            ratioView?.text = String.format(java.util.Locale.US, "%.2f", factor)
         }
     }
 
@@ -381,6 +389,7 @@ class CarouselBannerView @JvmOverloads constructor(
             if (items.isEmpty()) return
             val realIndex = getRealIndexForPosition(position)
             holder.bind(items[realIndex], realIndex, position)
+            recyclerView.post { updateItemTransforms() }
         }
 
         override fun getItemCount(): Int {
@@ -421,9 +430,9 @@ class CarouselBannerView @JvmOverloads constructor(
     }
 
     private companion object {
-        const val ITEM_WIDTH_PERCENT = 0.52f
-        const val MIN_SCALE = 0.78f
-        const val MAX_SCALE = 1.0f
-        const val MIN_ALPHA = 0.65f
+        const val ITEM_WIDTH_PERCENT = 0.34f
+        const val MIN_SCALE = 0.82f
+        const val MAX_SCALE = 1.08f
+        const val MIN_ALPHA = 0.70f
     }
 }
