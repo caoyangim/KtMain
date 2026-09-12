@@ -1,7 +1,6 @@
 package com.cy.ktmain
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
@@ -116,7 +115,7 @@ class CarouselBannerView @JvmOverloads constructor(
         recyclerView.setPadding(horizontalPadding, 0, horizontalPadding, 0)
 
         post {
-            if (currentPosition > 0) {
+            if (currentPosition >= 0 && items.isNotEmpty()) {
                 recyclerView.scrollToPosition(currentPosition)
                 post {
                     snapToPosition(currentPosition)
@@ -138,10 +137,15 @@ class CarouselBannerView @JvmOverloads constructor(
 
     fun setItems(items: List<CarouselItem>) {
         this.items = items
+        adapter.notifyDataSetChanged()
         if (items.isEmpty()) return
 
-        val centerOffset = (Int.MAX_VALUE / 2) - ((Int.MAX_VALUE / 2) % items.size)
-        currentPosition = centerOffset
+        val centerOffset = if (items.size > 1) {
+            (Int.MAX_VALUE / 2) - ((Int.MAX_VALUE / 2) % items.size)
+        } else {
+            0
+        }
+        currentPosition = 3
 
         recyclerView.scrollToPosition(centerOffset)
         post {
@@ -163,11 +167,11 @@ class CarouselBannerView @JvmOverloads constructor(
     fun startAutoScroll() {
         isAutoScrollEnabled = true
         stopAutoScrollInternal()
-        if (items.isEmpty()) return
+        if (items.size <= 1) return
 
         autoScrollRunnable = object : Runnable {
             override fun run() {
-                if (height > 0 && items.isNotEmpty()) {
+                if (height > 0 && items.size > 1) {
                     currentPosition++
                     recyclerView.smoothScrollToPosition(currentPosition)
                 }
@@ -188,25 +192,42 @@ class CarouselBannerView @JvmOverloads constructor(
     fun isAutoScrolling(): Boolean = isAutoScrollRunning && isAutoScrollEnabled
 
     fun scrollToNext() {
-        if (items.isEmpty()) return
+        if (items.size <= 1) return
         currentPosition++
         recyclerView.smoothScrollToPosition(currentPosition)
     }
 
     fun scrollToPrevious() {
-        if (items.isEmpty()) return
+        if (items.size <= 1) return
         currentPosition--
         recyclerView.smoothScrollToPosition(currentPosition)
     }
 
-    fun getCurrentRealIndex(): Int {
-        if (items.isEmpty()) return 0
-        return ((currentPosition % items.size) + items.size) % items.size
+    fun scrollToAdapterPosition(targetPosition: Int, smoothScroll: Boolean = false) {
+        if (items.isEmpty()) return
+        currentPosition = targetPosition
+        if (smoothScroll) {
+            recyclerView.smoothScrollToPosition(targetPosition)
+        } else {
+            recyclerView.scrollToPosition(targetPosition)
+            post {
+                snapToPosition(targetPosition)
+                updateItemTransforms()
+                updateCenteredPosition()
+            }
+        }
     }
+
+    fun getCurrentRealIndex(): Int = getRealIndexForPosition(currentPosition)
 
     fun getCurrentAdapterPosition(): Int = currentPosition
 
     fun getRealCount(): Int = items.size
+
+    private fun getRealIndexForPosition(position: Int): Int {
+        if (items.isEmpty()) return 0
+        return ((position % items.size) + items.size) % items.size
+    }
 
     private fun stopAutoScrollInternal() {
         autoScrollRunnable?.let { handler.removeCallbacks(it) }
@@ -223,11 +244,30 @@ class CarouselBannerView @JvmOverloads constructor(
     private fun updateCenteredPosition() {
         val snapView = snapHelper.findSnapView(layoutManager) ?: return
         val pos = layoutManager.getPosition(snapView)
-        if (pos != RecyclerView.NO_POSITION && pos != currentPosition) {
+        if (pos == RecyclerView.NO_POSITION) return
+
+        val n = items.size
+        if (n > 1) {
+            val safeThreshold = n * 1000
+            if (pos < safeThreshold || pos > Int.MAX_VALUE - safeThreshold) {
+                val centerOffset = (Int.MAX_VALUE / 2) - ((Int.MAX_VALUE / 2) % n)
+                val realIndex = ((pos % n) + n) % n
+                val newPos = centerOffset + realIndex
+                currentPosition = newPos
+                recyclerView.scrollToPosition(newPos)
+                recyclerView.post {
+                    snapToPosition(newPos)
+                    updateItemTransforms()
+                }
+            } else {
+                currentPosition = pos
+            }
+        } else {
             currentPosition = pos
-            notifyPageChanged()
-            updateIndicators()
         }
+
+        notifyPageChanged()
+        updateIndicators()
         updateItemTransforms()
     }
 
@@ -339,11 +379,15 @@ class CarouselBannerView @JvmOverloads constructor(
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             if (items.isEmpty()) return
-            val realIndex = ((position % items.size) + items.size) % items.size
+            val realIndex = getRealIndexForPosition(position)
             holder.bind(items[realIndex], realIndex, position)
         }
 
-        override fun getItemCount(): Int = if (items.isEmpty()) 0 else 10
+        override fun getItemCount(): Int {
+            if (items.isEmpty()) return 0
+            if (items.size == 1) return 1
+            return Int.MAX_VALUE
+        }
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val cardBackground: RelativeLayout = itemView.findViewById(R.id.cardBackground)

@@ -105,6 +105,49 @@ class CarouselActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btnNext).setOnClickListener {
             carouselBannerView.scrollToNext()
         }
+
+        setupJumpControls()
+    }
+
+    private fun setupJumpControls() {
+        val etJumpTarget = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etJumpTarget)
+
+        findViewById<MaterialButton>(R.id.btnJumpPage).setOnClickListener {
+            val targetPos = etJumpTarget.text?.toString()?.toIntOrNull()
+            if (targetPos != null && targetPos >= 0) {
+                carouselBannerView.scrollToAdapterPosition(targetPos, false)
+                Toast.makeText(
+                    this,
+                    getString(R.string.carousel_toast_jumped_pos, targetPos),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    this,
+                    getString(R.string.carousel_toast_invalid_pos),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        findViewById<MaterialButton>(R.id.btnJumpPos0).setOnClickListener {
+            carouselBannerView.scrollToAdapterPosition(0, false)
+            Toast.makeText(
+                this,
+                getString(R.string.carousel_toast_jumped_pos, 0),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        findViewById<MaterialButton>(R.id.btnJumpPosMax).setOnClickListener {
+            val targetPos = Int.MAX_VALUE - 10
+            carouselBannerView.scrollToAdapterPosition(targetPos, false)
+            Toast.makeText(
+                this,
+                getString(R.string.carousel_toast_jumped_pos, targetPos),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     private fun updateStatus(adapterPosition: Int, realIndex: Int) {

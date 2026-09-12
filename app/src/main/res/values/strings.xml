@@ -96,4 +96,11 @@
     <string name="carousel_action_prev">上一页</string>
     <string name="carousel_action_next">下一页</string>
     <string name="carousel_click_toast">点击了第 %1$d 项：%2$s</string>
+    <string name="carousel_jump_title">指定 Adapter Position 极端测试</string>
+    <string name="carousel_jump_hint">输入目标 Position (例如 0, 100&#8230;)</string>
+    <string name="carousel_action_jump_pos">跳转至 Position n</string>
+    <string name="carousel_action_jump_pos_0">测试 Pos 0</string>
+    <string name="carousel_action_jump_pos_max">测试 Pos MAX</string>
+    <string name="carousel_toast_invalid_pos">请输入有效的 Position 数值</string>
+    <string name="carousel_toast_jumped_pos">已跳转至 Position %1$d</string>
 </resources>
