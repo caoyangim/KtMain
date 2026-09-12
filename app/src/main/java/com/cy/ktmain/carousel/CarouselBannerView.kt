@@ -12,16 +12,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.cy.ktmain.R
+import com.cy.ktmain.widgets.CarouselIndicatorView
 import kotlin.math.abs
 
 data class CarouselItem(
@@ -42,7 +40,7 @@ class CarouselBannerView @JvmOverloads constructor(
     private val recyclerView = RecyclerView(context)
     private val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
     private val snapHelper = LinearSnapHelper()
-    private val indicatorContainer = LinearLayout(context)
+    private val indicatorView = CarouselIndicatorView(context)
 
     private val handler = Handler(Looper.getMainLooper())
     private var autoScrollRunnable: Runnable? = null
@@ -95,11 +93,6 @@ class CarouselBannerView @JvmOverloads constructor(
     }
 
     private fun setupIndicatorContainer() {
-        indicatorContainer.apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            setPadding(0, 0, 0, (8 * resources.displayMetrics.density).toInt())
-        }
         val indicatorLp = LayoutParams(
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT
@@ -107,7 +100,7 @@ class CarouselBannerView @JvmOverloads constructor(
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
             bottomMargin = (12 * resources.displayMetrics.density).toInt()
         }
-        addView(indicatorContainer, indicatorLp)
+        addView(indicatorView, indicatorLp)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -155,7 +148,7 @@ class CarouselBannerView @JvmOverloads constructor(
         post {
             snapToPosition(centerOffset)
             updateItemTransforms()
-            rebuildIndicators()
+            updateIndicators()
             notifyPageChanged()
         }
     }
@@ -303,6 +296,10 @@ class CarouselBannerView @JvmOverloads constructor(
         val itemWidth = width * ITEM_WIDTH_PERCENT
         if (itemWidth <= 0f) return
 
+        var maxFactor = -1f
+        var maxFactorChildOffset = 0f
+        var maxFactorChildPos = RecyclerView.NO_POSITION
+
         for (i in 0 until recyclerView.childCount) {
             val child = recyclerView.getChildAt(i)
             val childCenterX = (child.left + child.right) / 2f
@@ -336,64 +333,30 @@ class CarouselBannerView @JvmOverloads constructor(
 
             val ratioView = child.findViewById<TextView>(R.id.cardRatio)
             ratioView?.text = String.format(java.util.Locale.US, "%.2f", factor)
-        }
-    }
 
-    private fun rebuildIndicators() {
-        indicatorContainer.removeAllViews()
-        val count = items.size
-        if (count <= 1) return
-
-        val density = resources.displayMetrics.density
-        val normalWidth = (8 * density).toInt()
-        val activeWidth = (22 * density).toInt()
-        val height = (8 * density).toInt()
-        val margin = (4 * density).toInt()
-
-        val realIndex = getCurrentRealIndex()
-
-        for (i in 0 until count) {
-            val dot = View(context)
-            val isSelected = (i == realIndex)
-            val dotWidth = if (isSelected) activeWidth else normalWidth
-
-            val lp = LinearLayout.LayoutParams(dotWidth, height).apply {
-                setMargins(margin, 0, margin, 0)
+            if (factor > maxFactor) {
+                maxFactor = factor
+                maxFactorChildOffset = (centerX - childCenterX) / itemWidth
+                maxFactorChildPos = layoutManager.getPosition(child)
             }
-            dot.layoutParams = lp
-            dot.background = createDotDrawable(isSelected)
-            indicatorContainer.addView(dot)
+        }
+
+        val count = items.size
+        if (count > 1 && maxFactorChildPos != RecyclerView.NO_POSITION) {
+            val currentRealIndex = getRealIndexForPosition(maxFactorChildPos)
+            val nextRealIndex = if (maxFactorChildOffset >= 0) {
+                (currentRealIndex + 1) % count
+            } else {
+                (currentRealIndex - 1 + count) % count
+            }
+            val progress = (1f - maxFactor).coerceIn(0f, 1f)
+            indicatorView.setScrollProgress(currentRealIndex, nextRealIndex, progress)
         }
     }
 
     private fun updateIndicators() {
-        val count = items.size
-        if (count <= 1 || indicatorContainer.childCount != count) return
-
-        val density = resources.displayMetrics.density
-        val normalWidth = (8 * density).toInt()
-        val activeWidth = (22 * density).toInt()
-        val realIndex = getCurrentRealIndex()
-
-        for (i in 0 until count) {
-            val dot = indicatorContainer.getChildAt(i)
-            val isSelected = (i == realIndex)
-            val lp = dot.layoutParams as LinearLayout.LayoutParams
-            val targetWidth = if (isSelected) activeWidth else normalWidth
-            if (lp.width != targetWidth) {
-                lp.width = targetWidth
-                dot.layoutParams = lp
-                dot.background = createDotDrawable(isSelected)
-            }
-        }
-    }
-
-    private fun createDotDrawable(isSelected: Boolean): GradientDrawable {
-        return GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = 20f
-            setColor(if (isSelected) ContextCompat.getColor(context, R.color.lab_accent) else "#B0BEC5".toColorInt())
-        }
+        indicatorView.count = items.size
+        indicatorView.setSelection(getCurrentRealIndex())
     }
 
     private fun notifyPageChanged() {
