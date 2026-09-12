@@ -1,13 +1,13 @@
-package com.cy.ktmain
+package com.cy.ktmain.coroutine
 
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.updateAndFetch
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.resume
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.concurrent.atomics.updateAndFetch
-import kotlin.coroutines.resume
 
 @OptIn(ExperimentalAtomicApi::class)
 abstract class AbstractCoroutine<T>(context: CoroutineContext) : Job, Continuation<T> {
@@ -18,7 +18,7 @@ abstract class AbstractCoroutine<T>(context: CoroutineContext) : Job, Continuati
         get() = state.load() is CoroutineState.Complete<*>
 
     override val isActive: Boolean
-        get() = when (val currentState = state.load()) {
+        get() = when (state.load()) {
             is CoroutineState.Complete<*>,
             is CoroutineState.Cancelling -> false
 
@@ -29,16 +29,18 @@ abstract class AbstractCoroutine<T>(context: CoroutineContext) : Job, Continuati
         return doOnCompleted { _ -> onCompleted() }
     }
 
-    protected fun doOnCompleted(block:(Result<T>) -> Unit):Disposable{
-        val disposable = CompletionHandler(block,this)
+    protected fun doOnCompleted(block: (Result<T>) -> Unit): Disposable {
+        val disposable = CompletionHandler(block, this)
         val newState = state.updateAndFetch { currentState ->
-            when(currentState){
+            when (currentState) {
                 is CoroutineState.Incomplete -> {
                     currentState.with(disposable)
                 }
+
                 is CoroutineState.Cancelling -> {
                     currentState.with(disposable)
                 }
+
                 is CoroutineState.Complete<*> -> {
                     currentState
                 }
@@ -101,13 +103,14 @@ abstract class AbstractCoroutine<T>(context: CoroutineContext) : Job, Continuati
     }
 
     override fun resumeWith(result: Result<T>) {
-        val newState = state.updateAndFetch {prev->
-            when(prev){
+        val newState = state.updateAndFetch { prev ->
+            when (prev) {
                 is CoroutineState.Cancelling,
                 is CoroutineState.Incomplete -> {
-                    CoroutineState.Complete(result.getOrNull(),result.exceptionOrNull()).from(prev)
+                    CoroutineState.Complete(result.getOrNull(), result.exceptionOrNull()).from(prev)
                 }
-                is CoroutineState.Complete<*> ->{
+
+                is CoroutineState.Complete<*> -> {
                     throw IllegalStateException("Already completed")
                 }
             }
@@ -115,20 +118,20 @@ abstract class AbstractCoroutine<T>(context: CoroutineContext) : Job, Continuati
         newState.notifyCompletion(result)
         newState.clear()
     }
-
 }
 
 private class CancelHandler(
     val onCancel: OnCancel,
-    private val onDispose: (Disposable) -> Unit
+    private val onDispose: (Disposable) -> Unit,
 ) : Disposable {
     override fun dispose() {
         onDispose(this)
     }
 }
+
 class CompletionHandler<T>(
     val onCompleted: (Result<T>) -> Unit,
-    private val job: Job
+    private val job: Job,
 ) : Disposable {
     override fun dispose() {
         job.remove(this)

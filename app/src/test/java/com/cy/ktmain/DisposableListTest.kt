@@ -1,5 +1,8 @@
 package com.cy.ktmain
 
+import com.cy.ktmain.coroutine.Disposable
+import com.cy.ktmain.coroutine.DisposableList
+import com.cy.ktmain.coroutine.remove
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test

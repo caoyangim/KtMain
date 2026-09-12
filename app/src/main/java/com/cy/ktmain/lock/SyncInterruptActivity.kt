@@ -1,10 +1,11 @@
-package com.cy.ktmain
+package com.cy.ktmain.lock
 
 import android.os.Bundle
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.cy.ktmain.lock.SyncInterruptDemo
+import com.cy.ktmain.R
+import com.cy.ktmain.utils.setupEdgeToEdgeInsets
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 
@@ -20,7 +21,7 @@ class SyncInterruptActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sync_interrupt)
         setupEdgeToEdgeInsets(
             rootView = findViewById(R.id.syncRoot),
-            toolbar = findViewById(R.id.syncToolbar)
+            toolbar = findViewById(R.id.syncToolbar),
         )
 
         findViewById<MaterialToolbar>(R.id.syncToolbar).setNavigationOnClickListener {

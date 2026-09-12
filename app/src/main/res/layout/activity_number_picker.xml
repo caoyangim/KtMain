@@ -107,7 +107,7 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <com.cy.ktmain.CyNumberPicker
+                    <com.cy.ktmain.picker.CyNumberPicker
                         android:id="@+id/nativePicker"
                         android:layout_width="match_parent"
                         android:layout_height="178dp"
@@ -181,7 +181,7 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <com.cy.ktmain.RvNumberPicker
+                    <com.cy.ktmain.picker.RvNumberPicker
                         android:id="@+id/recyclerPicker"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"

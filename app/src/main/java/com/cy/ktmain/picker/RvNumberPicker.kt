@@ -1,4 +1,4 @@
-package com.cy.ktmain
+package com.cy.ktmain.picker
 
 import android.content.Context
 import android.util.AttributeSet
@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.cy.ktmain.R
 import kotlin.math.abs
 
 class RvNumberPicker @JvmOverloads constructor(

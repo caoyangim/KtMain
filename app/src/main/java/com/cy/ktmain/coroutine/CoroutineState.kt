@@ -1,9 +1,9 @@
-package com.cy.ktmain
+package com.cy.ktmain.coroutine
 
 sealed class CoroutineState {
-    class Incomplete:CoroutineState()
-    class Cancelling:CoroutineState()
-    class Complete<T>(val value:T? = null, val exception:Throwable? = null):CoroutineState()
+    class Incomplete : CoroutineState()
+    class Cancelling : CoroutineState()
+    class Complete<T>(val value: T? = null, val exception: Throwable? = null) : CoroutineState()
 
     internal var disposableList: DisposableList = DisposableList.Nil
 
@@ -13,7 +13,7 @@ sealed class CoroutineState {
     }
 
     fun with(disposable: Disposable): CoroutineState {
-        this.disposableList = DisposableList.Cons(disposable,this.disposableList)
+        this.disposableList = DisposableList.Cons(disposable, this.disposableList)
         return this
     }
 

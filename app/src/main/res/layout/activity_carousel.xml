@@ -82,7 +82,7 @@
                 app:strokeColor="@color/lab_border"
                 app:strokeWidth="1dp">
 
-                <com.cy.ktmain.CarouselBannerView
+                <com.cy.ktmain.carousel.CarouselBannerView
                     android:id="@+id/carouselBanner"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

@@ -1,6 +1,5 @@
-package com.cy.ktmain
+package com.cy.ktmain.coroutine
 
-import kotlinx.coroutines.CoroutineScope
 import kotlin.coroutines.CoroutineContext
 
 interface Job: CoroutineContext.Element {
@@ -8,17 +7,19 @@ interface Job: CoroutineContext.Element {
     override val key: CoroutineContext.Key<*> get() = Job
 
     val isActive: Boolean
-    fun invokeOnCancel(onCancel:OnCancel):Disposable
-    fun invokeOnCompletion(onCompleted:OnCompleted):Disposable
+    fun invokeOnCancel(onCancel: OnCancel): Disposable
+    fun invokeOnCompletion(onCompleted: OnCompleted): Disposable
     fun cancel()
-    fun remove(disposable:Disposable)
+    fun remove(disposable: Disposable)
     suspend fun join()
 }
 
-interface Disposable{
+interface Disposable {
     fun dispose()
 }
-interface OnCancel{
+
+interface OnCancel {
     fun onCancel(cause: Throwable?)
 }
-typealias OnCompleted = ()-> Unit
+
+typealias OnCompleted = () -> Unit

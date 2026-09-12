@@ -1,10 +1,12 @@
-package com.cy.ktmain
+package com.cy.ktmain.carousel
 
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColorInt
+import com.cy.ktmain.R
+import com.cy.ktmain.utils.setupEdgeToEdgeInsets
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 
@@ -19,7 +21,7 @@ class CarouselActivity : AppCompatActivity() {
         setContentView(R.layout.activity_carousel)
         setupEdgeToEdgeInsets(
             rootView = findViewById(R.id.carouselRoot),
-            toolbar = findViewById(R.id.carouselToolbar)
+            toolbar = findViewById(R.id.carouselToolbar),
         )
 
         findViewById<MaterialToolbar>(R.id.carouselToolbar).setNavigationOnClickListener {

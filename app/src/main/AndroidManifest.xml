@@ -35,19 +35,19 @@
         </service>
 
         <activity
-            android:name=".BluetoothTileActivity"
+            android:name=".bluetooth.BluetoothTileActivity"
             android:exported="false" />
 
         <activity
-            android:name=".NumberPickerActivity"
+            android:name=".picker.NumberPickerActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SyncInterruptActivity"
+            android:name=".lock.SyncInterruptActivity"
             android:exported="false" />
 
         <activity
-            android:name=".CarouselActivity"
+            android:name=".carousel.CarouselActivity"
             android:exported="false" />
 
         <activity

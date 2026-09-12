@@ -1,17 +1,16 @@
-package com.cy.ktmain
+package com.cy.ktmain.coroutine
 
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.startCoroutine
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 interface Deferred<T> : Job {
     suspend fun await(): T
 }
 
 @OptIn(ExperimentalAtomicApi::class)
-
 class DeferredCoroutine<T>(context: CoroutineContext) : AbstractCoroutine<T>(context), Deferred<T> {
     override suspend fun await(): T {
         return when (val currentState = state.load()) {
@@ -35,7 +34,7 @@ class DeferredCoroutine<T>(context: CoroutineContext) : AbstractCoroutine<T>(con
     }
 }
 
-fun <T> async(context: CoroutineContext = EmptyCoroutineContext, block: suspend () -> T) : Deferred<T> {
+fun <T> async(context: CoroutineContext = EmptyCoroutineContext, block: suspend () -> T): Deferred<T> {
     val completion = DeferredCoroutine<T>(context)
     block.startCoroutine(completion)
     return completion

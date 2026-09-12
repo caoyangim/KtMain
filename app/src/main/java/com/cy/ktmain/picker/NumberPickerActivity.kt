@@ -1,8 +1,10 @@
-package com.cy.ktmain
+package com.cy.ktmain.picker
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.cy.ktmain.R
+import com.cy.ktmain.utils.setupEdgeToEdgeInsets
 import com.google.android.material.appbar.MaterialToolbar
 
 class NumberPickerActivity : AppCompatActivity() {
@@ -12,7 +14,7 @@ class NumberPickerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_number_picker)
         setupEdgeToEdgeInsets(
             rootView = findViewById(R.id.pickerRoot),
-            toolbar = findViewById(R.id.pickerToolbar)
+            toolbar = findViewById(R.id.pickerToolbar),
         )
 
         findViewById<MaterialToolbar>(R.id.pickerToolbar).setNavigationOnClickListener {

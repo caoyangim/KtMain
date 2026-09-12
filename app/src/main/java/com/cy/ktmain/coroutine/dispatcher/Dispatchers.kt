@@ -1,4 +1,4 @@
-package com.cy.ktmain.dispatcher
+package com.cy.ktmain.coroutine.dispatcher
 
 object CYDispatchers {
     val Default by lazy {

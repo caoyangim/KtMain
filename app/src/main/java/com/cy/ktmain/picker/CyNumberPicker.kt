@@ -1,4 +1,4 @@
-package com.cy.ktmain
+package com.cy.ktmain.picker
 
 import android.content.Context
 import android.graphics.Canvas
@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.widget.OverScroller
 import androidx.core.content.ContextCompat
+import com.cy.ktmain.R
 import kotlin.math.abs
 import kotlin.math.roundToInt
 

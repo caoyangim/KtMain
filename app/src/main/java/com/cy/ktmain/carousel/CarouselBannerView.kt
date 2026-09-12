@@ -1,4 +1,4 @@
-package com.cy.ktmain
+package com.cy.ktmain.carousel
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.cy.ktmain.R
 import kotlin.math.abs
 
 data class CarouselItem(
@@ -241,8 +242,6 @@ class CarouselBannerView @JvmOverloads constructor(
     private fun smoothScrollToTargetPosition(targetPosition: Int) {
         val smoothScroller = object : LinearSmoothScroller(context) {
             override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-                // 原生默认速度约为 25f / densityDpi（滑动距离短时只需约 30ms，过快）
-                // 调整为 300f / densityDpi 后，切换 1 个 Card 过程约 400ms，动画流畅清晰
                 return 300f / displayMetrics.densityDpi
             }
 
@@ -313,7 +312,6 @@ class CarouselBannerView @JvmOverloads constructor(
 
             val scale = MIN_SCALE + (MAX_SCALE - MIN_SCALE) * factor
 
-            // 设置缩放基准点：X 为水平中心，Y 为顶部颜色卡片的中心点
             val cardBg = child.findViewById<View>(R.id.cardBackground)
             if (cardBg != null && cardBg.height > 0) {
                 child.pivotX = child.width / 2f

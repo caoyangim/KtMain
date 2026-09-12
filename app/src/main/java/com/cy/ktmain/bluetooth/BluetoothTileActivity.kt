@@ -1,4 +1,4 @@
-package com.cy.ktmain
+package com.cy.ktmain.bluetooth
 
 import android.app.StatusBarManager
 import android.bluetooth.BluetoothAdapter
@@ -14,8 +14,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.cy.ktmain.bluetooth.BluetoothDeviceTileService
-import com.cy.ktmain.bluetooth.BluetoothTileController
+import com.cy.ktmain.R
+import com.cy.ktmain.utils.setupEdgeToEdgeInsets
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 
@@ -41,7 +41,7 @@ class BluetoothTileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_bluetooth_tile)
         setupEdgeToEdgeInsets(
             rootView = findViewById(R.id.bluetoothRoot),
-            toolbar = findViewById(R.id.bluetoothToolbar)
+            toolbar = findViewById(R.id.bluetoothToolbar),
         )
 
         statusView = findViewById(R.id.bluetoothStatus)
@@ -165,9 +165,14 @@ class BluetoothTileActivity : AppCompatActivity() {
     }
 
     private fun BluetoothDevice.displayLabel(): String {
-        val name = if (BluetoothTileController.hasConnectPermission(this@BluetoothTileActivity)) {
-            name
-        } else {
+        val name = try {
+            if (BluetoothTileController.hasConnectPermission(this@BluetoothTileActivity)) {
+                @Suppress("MissingPermission")
+                name
+            } else {
+                null
+            }
+        } catch (e: SecurityException) {
             null
         }
         return if (name.isNullOrBlank()) address else "$name\n$address"

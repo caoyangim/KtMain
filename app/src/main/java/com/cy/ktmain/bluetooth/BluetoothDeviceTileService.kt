@@ -6,7 +6,6 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.cy.ktmain.BluetoothTileActivity
 import com.cy.ktmain.R
 
 class BluetoothDeviceTileService : TileService() {

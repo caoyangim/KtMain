@@ -11,6 +11,11 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.cy.ktmain.bluetooth.BluetoothTileActivity
+import com.cy.ktmain.carousel.CarouselActivity
+import com.cy.ktmain.lock.SyncInterruptActivity
+import com.cy.ktmain.picker.NumberPickerActivity
+import com.cy.ktmain.utils.setupEdgeToEdgeInsets
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
