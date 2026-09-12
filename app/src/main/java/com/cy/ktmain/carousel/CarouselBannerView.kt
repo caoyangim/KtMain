@@ -12,13 +12,18 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.cy.ktmain.R
+import com.cy.ktmain.compose.CarouselIndicator
 import com.cy.ktmain.widgets.CarouselIndicatorView
 import kotlin.math.abs
 
@@ -41,6 +46,9 @@ class CarouselBannerView @JvmOverloads constructor(
     private val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
     private val snapHelper = LinearSnapHelper()
     private val indicatorView = CarouselIndicatorView(context)
+    private val composeIndicatorView = ComposeView(context)
+    private val composeProgressState = mutableStateOf(Triple(0, 0, 0f))
+    private val composeCountState = mutableIntStateOf(0)
 
     private val handler = Handler(Looper.getMainLooper())
     private var autoScrollRunnable: Runnable? = null
@@ -93,14 +101,57 @@ class CarouselBannerView @JvmOverloads constructor(
     }
 
     private fun setupIndicatorContainer() {
+        val indicatorsContainer = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+        }
+
         val indicatorLp = LayoutParams(
-            LayoutParams.WRAP_CONTENT,
+            LayoutParams.MATCH_PARENT,
             LayoutParams.WRAP_CONTENT
         ).apply {
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            bottomMargin = (12 * resources.displayMetrics.density).toInt()
+            bottomMargin = (8 * resources.displayMetrics.density).toInt()
         }
-        addView(indicatorView, indicatorLp)
+
+        composeIndicatorView.setContent {
+            val (curr, next, prog) = composeProgressState.value
+            val count = composeCountState.intValue
+            CarouselIndicator(
+                count = count,
+                currentIndex = curr,
+                nextIndex = next,
+                progress = prog
+            )
+        }
+
+        val space = View(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                (4 * resources.displayMetrics.density).toInt()
+            )
+        }
+
+        val childLp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = Gravity.CENTER_HORIZONTAL
+        }
+
+        indicatorsContainer.addView(indicatorView, childLp)
+        indicatorsContainer.addView(space)
+        indicatorsContainer.addView(
+            composeIndicatorView,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+        )
+
+        addView(indicatorsContainer, indicatorLp)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -351,12 +402,16 @@ class CarouselBannerView @JvmOverloads constructor(
             }
             val progress = (1f - maxFactor).coerceIn(0f, 1f)
             indicatorView.setScrollProgress(currentRealIndex, nextRealIndex, progress)
+            composeProgressState.value = Triple(currentRealIndex, nextRealIndex, progress)
+            composeCountState.intValue = count
         }
     }
 
     private fun updateIndicators() {
         indicatorView.count = items.size
         indicatorView.setSelection(getCurrentRealIndex())
+        composeCountState.intValue = items.size
+        composeProgressState.value = Triple(getCurrentRealIndex(), getCurrentRealIndex(), 0f)
     }
 
     private fun notifyPageChanged() {

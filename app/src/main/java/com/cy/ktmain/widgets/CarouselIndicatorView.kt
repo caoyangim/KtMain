@@ -71,7 +71,7 @@ class CarouselIndicatorView @JvmOverloads constructor(
         val totalWidth = if (count <= 0) {
             0f
         } else {
-            aWidth + (count - 1) * nWidth + (count - 1) * (margin * 2) + paddingLeft + paddingRight
+            aWidth + ((count - 1) * nWidth) + (count * margin * 2) + paddingLeft + paddingRight
         }
         val totalHeight = h + paddingTop + paddingBottom
 
@@ -91,7 +91,7 @@ class CarouselIndicatorView @JvmOverloads constructor(
         val margin = dotMarginDp * density
         val radius = cornerRadiusDp * density
 
-        val totalContentWidth = aWidth + (count - 1) * nWidth + (count - 1) * (margin * 2)
+        val totalContentWidth = aWidth + (count - 1) * nWidth + count * (margin * 2)
         var startX = (width - totalContentWidth) / 2f
         val startY = (height - h) / 2f
 
