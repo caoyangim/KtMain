@@ -75,6 +75,10 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+        setupEdgeToEdgeInsets(
+            rootView = findViewById(R.id.homeRoot),
+            toolbar = findViewById(R.id.homeToolbar)
+        )
 
         findViewById<TextView>(R.id.readyCount).text =
             modules.count { it.status == ModuleStatus.READY }.toString()

@@ -39,6 +39,10 @@ class BluetoothTileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth_tile)
+        setupEdgeToEdgeInsets(
+            rootView = findViewById(R.id.bluetoothRoot),
+            toolbar = findViewById(R.id.bluetoothToolbar)
+        )
 
         statusView = findViewById(R.id.bluetoothStatus)
         deviceGroup = findViewById(R.id.deviceGroup)

@@ -10,6 +10,10 @@ class NumberPickerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_number_picker)
+        setupEdgeToEdgeInsets(
+            rootView = findViewById(R.id.pickerRoot),
+            toolbar = findViewById(R.id.pickerToolbar)
+        )
 
         findViewById<MaterialToolbar>(R.id.pickerToolbar).setNavigationOnClickListener {
             finish()

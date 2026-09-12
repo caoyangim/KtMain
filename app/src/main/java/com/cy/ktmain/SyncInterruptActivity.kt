@@ -18,6 +18,10 @@ class SyncInterruptActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sync_interrupt)
+        setupEdgeToEdgeInsets(
+            rootView = findViewById(R.id.syncRoot),
+            toolbar = findViewById(R.id.syncToolbar)
+        )
 
         findViewById<MaterialToolbar>(R.id.syncToolbar).setNavigationOnClickListener {
             finish()

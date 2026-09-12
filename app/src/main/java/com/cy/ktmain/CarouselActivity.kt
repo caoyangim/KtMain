@@ -17,6 +17,10 @@ class CarouselActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_carousel)
+        setupEdgeToEdgeInsets(
+            rootView = findViewById(R.id.carouselRoot),
+            toolbar = findViewById(R.id.carouselToolbar)
+        )
 
         findViewById<MaterialToolbar>(R.id.carouselToolbar).setNavigationOnClickListener {
             finish()
