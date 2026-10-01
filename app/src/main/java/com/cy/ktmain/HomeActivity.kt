@@ -4,17 +4,24 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.LinearLayout
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.cy.ktmain.bluetooth.BluetoothTileActivity
 import com.cy.ktmain.carousel.CarouselActivity
+import com.cy.ktmain.carousel.CarouselLayoutManagerActivity
+import com.cy.ktmain.carousel.FoldableVPActivity
 import com.cy.ktmain.lock.SyncInterruptActivity
 import com.cy.ktmain.picker.NumberPickerActivity
+import com.cy.ktmain.utils.GridSpacingItemDecoration
+import com.cy.ktmain.utils.WindowWidthSizeClass
+import com.cy.ktmain.utils.gridSpanCount
 import com.cy.ktmain.utils.setupEdgeToEdgeInsets
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
@@ -74,7 +81,7 @@ class HomeActivity : AppCompatActivity() {
             badgeBackground = R.drawable.bg_badge_clm,
             status = ModuleStatus.READY,
             detail = R.string.module_clm_detail,
-            destination = com.cy.ktmain.carousel.CarouselLayoutManagerActivity::class.java
+            destination = CarouselLayoutManagerActivity::class.java
         ),
         LabModule(
             title = R.string.module_foldable_vp_title,
@@ -83,7 +90,7 @@ class HomeActivity : AppCompatActivity() {
             badgeBackground = R.drawable.bg_badge_clm,
             status = ModuleStatus.READY,
             detail = R.string.module_foldable_vp_detail,
-            destination = com.cy.ktmain.carousel.FoldableVPActivity::class.java
+            destination = FoldableVPActivity::class.java
         ),
         LabModule(
             title = R.string.module_network_title,
@@ -108,39 +115,66 @@ class HomeActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.plannedCount).text =
             modules.count { it.status == ModuleStatus.PLANNED }.toString()
 
-        val container = findViewById<LinearLayout>(R.id.moduleContainer)
-        modules.forEach { module ->
-            val card = LayoutInflater.from(this)
-                .inflate(R.layout.item_test_module, container, false) as MaterialCardView
-            bindModule(card, module)
-            container.addView(card)
-        }
+        val container = findViewById<RecyclerView>(R.id.moduleContainer)
+        val widthClass = WindowWidthSizeClass.fromWidthDp(resources.configuration.screenWidthDp)
+        val spanCount = widthClass.gridSpanCount()
+        container.layoutManager = GridLayoutManager(this, spanCount)
+        container.adapter = ModuleAdapter(modules) { openModule(it) }
+        container.addItemDecoration(
+            GridSpacingItemDecoration(
+                spanCount,
+                resources.getDimensionPixelSize(R.dimen.module_grid_spacing)
+            )
+        )
     }
 
-    private fun bindModule(card: MaterialCardView, module: LabModule) {
-        card.findViewById<TextView>(R.id.moduleBadge).apply {
-            setText(module.badge)
-            setBackgroundResource(module.badgeBackground)
-        }
-        card.findViewById<TextView>(R.id.moduleTitle).setText(module.title)
-        card.findViewById<TextView>(R.id.moduleDescription).setText(module.description)
-        card.findViewById<Chip>(R.id.moduleStatus).apply {
-            setText(module.status.label)
-            chipBackgroundColor = ColorStateList.valueOf(color(module.status.background))
-            setTextColor(color(module.status.foreground))
-        }
-        card.setOnClickListener {
-            module.destination?.let { destination ->
-                startActivity(Intent(this, destination))
-            } ?: MaterialAlertDialogBuilder(this)
-                    .setTitle(module.title)
-                    .setMessage(module.detail)
-                    .setPositiveButton(R.string.module_dialog_action, null)
-                    .show()
-        }
+    private fun openModule(module: LabModule) {
+        module.destination?.let { destination ->
+            startActivity(Intent(this, destination))
+        } ?: MaterialAlertDialogBuilder(this)
+            .setTitle(module.title)
+            .setMessage(module.detail)
+            .setPositiveButton(R.string.module_dialog_action, null)
+            .show()
     }
 
-    private fun color(@ColorRes resource: Int): Int = ContextCompat.getColor(this, resource)
+    private class ModuleAdapter(
+        private val modules: List<LabModule>,
+        private val onModuleClick: (LabModule) -> Unit
+    ) : RecyclerView.Adapter<ModuleAdapter.ViewHolder>() {
+
+        class ViewHolder(private val card: MaterialCardView) : RecyclerView.ViewHolder(card) {
+
+            fun bind(module: LabModule, onClick: (LabModule) -> Unit) {
+                card.findViewById<TextView>(R.id.moduleBadge).apply {
+                    setText(module.badge)
+                    setBackgroundResource(module.badgeBackground)
+                }
+                card.findViewById<TextView>(R.id.moduleTitle).setText(module.title)
+                card.findViewById<TextView>(R.id.moduleDescription).setText(module.description)
+                card.findViewById<Chip>(R.id.moduleStatus).apply {
+                    setText(module.status.label)
+                    chipBackgroundColor = ColorStateList.valueOf(
+                        ContextCompat.getColor(card.context, module.status.background)
+                    )
+                    setTextColor(ContextCompat.getColor(card.context, module.status.foreground))
+                }
+                card.setOnClickListener { onClick(module) }
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val card = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_test_module, parent, false) as MaterialCardView
+            return ViewHolder(card)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.bind(modules[position], onModuleClick)
+        }
+
+        override fun getItemCount(): Int = modules.size
+    }
 
     private data class LabModule(
         @StringRes val title: Int,
