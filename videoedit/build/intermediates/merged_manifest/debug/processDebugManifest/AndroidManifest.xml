@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.cy.ktmain.videoedit" >
+
+    <uses-sdk android:minSdkVersion="24" />
+
+    <application>
+        <activity
+            android:name="com.cy.ktmain.videoedit.VideoEditActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.VideoEdit" />
+        <activity
+            android:name="com.cy.ktmain.videoedit.VideoPreviewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.VideoEdit" />
+    </application>
+
+</manifest>

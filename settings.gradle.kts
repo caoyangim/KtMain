@@ -22,4 +22,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "KtMain"
 include(":app")
+include(":videoedit")
  

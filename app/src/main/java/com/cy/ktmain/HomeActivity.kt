@@ -23,6 +23,7 @@ import com.cy.ktmain.utils.GridSpacingItemDecoration
 import com.cy.ktmain.utils.WindowWidthSizeClass
 import com.cy.ktmain.utils.gridSpanCount
 import com.cy.ktmain.utils.setupEdgeToEdgeInsets
+import com.cy.ktmain.videoedit.VideoEditActivity
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -91,6 +92,15 @@ class HomeActivity : AppCompatActivity() {
             status = ModuleStatus.READY,
             detail = R.string.module_foldable_vp_detail,
             destination = FoldableVPActivity::class.java
+        ),
+        LabModule(
+            title = R.string.module_videoedit_title,
+            description = R.string.module_videoedit_description,
+            badge = R.string.module_videoedit_badge,
+            badgeBackground = R.drawable.bg_badge_ui,
+            status = ModuleStatus.READY,
+            detail = R.string.module_videoedit_detail,
+            destination = VideoEditActivity::class.java
         ),
         LabModule(
             title = R.string.module_network_title,

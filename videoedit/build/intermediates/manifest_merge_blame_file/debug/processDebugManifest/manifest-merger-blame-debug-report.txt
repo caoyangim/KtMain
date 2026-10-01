@@ -1,0 +1,31 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.cy.ktmain.videoedit" >
+4
+5    <uses-sdk android:minSdkVersion="24" />
+6
+7    <application>
+7-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:4:5-16:19
+8        <activity
+8-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:5:9-9:54
+9            android:name="com.cy.ktmain.videoedit.VideoEditActivity"
+9-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:6:13-46
+10            android:exported="false"
+10-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:7:13-37
+11            android:screenOrientation="portrait"
+11-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:8:13-49
+12            android:theme="@style/Theme.VideoEdit" />
+12-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:9:13-51
+13        <activity
+13-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:11:9-15:54
+14            android:name="com.cy.ktmain.videoedit.VideoPreviewActivity"
+14-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:12:13-49
+15            android:exported="false"
+15-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:13:13-37
+16            android:screenOrientation="portrait"
+16-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:14:13-49
+17            android:theme="@style/Theme.VideoEdit" />
+17-->D:\myCode\KtMain\videoedit\src\main\AndroidManifest.xml:15:13-51
+18    </application>
+19
+20</manifest>
