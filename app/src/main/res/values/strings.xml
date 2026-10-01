@@ -105,4 +105,46 @@
     <string name="carousel_toast_jumped_pos">已跳转至 Position %1$d</string>
     <string name="carousel_dir_log_title">实时 Dir 方向算法调试面板</string>
     <string name="carousel_dir_log_format">dir: %1$s\ncurrentIndex: %2$d | nextIndex: %3$d\ncontinuousRealIndex: %4$.2f\nprogress: %5$.2f\n轨迹 t: %6$s</string>
+
+    <!-- Material CarouselLayoutManager Module -->
+    <string name="module_clm_title">CarouselLayoutManager</string>
+    <string name="module_clm_description">Material 3 官方轮播：Keyline 关键线、动态 Mask 裁切与 Snap 策略体验</string>
+    <string name="module_clm_badge">CLM</string>
+    <string name="module_clm_detail">演示 com.google.android.material.carousel.CarouselLayoutManager 的各种策略（MultiBrowse、Hero、Uncontained、FullScreen）、横纵向滚动、对齐模式（Start/Center）以及 CarouselSnapHelper 对齐与剪裁动态效果。</string>
+
+    <string name="clm_toolbar_title">CarouselLayoutManager 实验</string>
+    <string name="clm_kicker">MATERIAL 3 CAROUSEL LAB</string>
+    <string name="clm_header_title">Material 3 CarouselLayoutManager 动态轮播</string>
+    <string name="clm_header_desc">展示基于 Keyline（关键线）算法的动态大小渐变与 Shape Mask 边缘裁剪。切换不同策略与参数实时观察效果。</string>
+    <string name="clm_label_strategy">布局策略 (CarouselStrategy)</string>
+    <string name="clm_strategy_multibrowse">MultiBrowse (多尺寸关联)</string>
+    <string name="clm_strategy_hero">Hero (突出主卡片)</string>
+    <string name="clm_strategy_uncontained">Uncontained (无边界自由流动)</string>
+    <string name="clm_strategy_fullscreen">FullScreen (全屏单页)</string>
+    <string name="clm_label_options">布局与控制参数</string>
+    <string name="clm_label_orientation">滚动方向</string>
+    <string name="clm_label_alignment">焦点卡片对齐模式 (CarouselAlignment)</string>
+    <string name="clm_label_interaction">交互控制</string>
+    <string name="clm_option_horizontal">横向 Horizontal</string>
+    <string name="clm_option_vertical">纵向 Vertical</string>
+    <string name="clm_option_snap">启用 CarouselSnapHelper 焦点的吸附对齐</string>
+    <string name="clm_option_align_start">Start 对齐</string>
+    <string name="clm_option_align_center">Center 对齐</string>
+    <string name="clm_label_status">当前参数与状态</string>
+    <string name="clm_status_info">策略: %1$s | 方向: %2$s | 吸附: %3$s | 对齐: %4$s\n当前焦点 Item 位置: %5$d / %6$d</string>
+    <string name="clm_strategy_desc_multibrowse">MultiBrowse: 屏幕上同时呈现大、中、小关键线，滑动时卡片在 Keyline 间平滑收缩与放大，适合多卡片浏览。</string>
+    <string name="clm_strategy_desc_hero">Hero: 突出展现 1 张主流 Hero 焦点大图，两侧配有预览小卡片，适合 Banner 强推荐位。</string>
+    <string name="clm_strategy_desc_uncontained">Uncontained: 卡片保持等大自由越过视图边界流动，不受 Keyline 压缩强制限制，滑动感流畅。</string>
+    <string name="clm_strategy_desc_fullscreen">FullScreen: 卡片伸展至整个 View 容器，实现单页全屏翻页轮播体验。</string>
+    <string name="clm_action_prev">上一项</string>
+    <string name="clm_action_next">下一项</string>
+    <string name="clm_action_scroll_first">跳到首项 (Pos 0)</string>
+    <string name="clm_action_scroll_last">跳到末项</string>
+    <string name="clm_click_toast">点击了第 %1$d 项 [%2$s]：%3$s</string>
+    <string name="clm_index_format">%1$d / %2$d</string>
+
+    <string name="module_foldable_vp_title">折叠屏 ViewPager</string>
+    <string name="module_foldable_vp_description">折叠屏展开状态显示两个 item，滑动滑动一个宽度</string>
+    <string name="module_foldable_vp_badge">FVP</string>
+    <string name="module_foldable_vp_detail">折叠屏展开状态显示两个 item，滑动滑动一个宽度；折叠状态下只显示一个 item</string>
 </resources>

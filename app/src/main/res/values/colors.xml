@@ -24,5 +24,6 @@
     <color name="lab_badge_network">#FFF0D8</color>
     <color name="lab_badge_bluetooth">#DFF0FF</color>
     <color name="lab_badge_carousel">#E8EAFF</color>
+    <color name="lab_badge_clm">#E3F2FD</color>
     <color name="lab_border">#E4E9EE</color>
 </resources>

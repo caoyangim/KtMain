@@ -68,6 +68,24 @@ class HomeActivity : AppCompatActivity() {
             destination = CarouselActivity::class.java
         ),
         LabModule(
+            title = R.string.module_clm_title,
+            description = R.string.module_clm_description,
+            badge = R.string.module_clm_badge,
+            badgeBackground = R.drawable.bg_badge_clm,
+            status = ModuleStatus.READY,
+            detail = R.string.module_clm_detail,
+            destination = com.cy.ktmain.carousel.CarouselLayoutManagerActivity::class.java
+        ),
+        LabModule(
+            title = R.string.module_foldable_vp_title,
+            description = R.string.module_foldable_vp_description,
+            badge = R.string.module_foldable_vp_badge,
+            badgeBackground = R.drawable.bg_badge_clm,
+            status = ModuleStatus.READY,
+            detail = R.string.module_foldable_vp_detail,
+            destination = com.cy.ktmain.carousel.FoldableVPActivity::class.java
+        ),
+        LabModule(
             title = R.string.module_network_title,
             description = R.string.module_network_description,
             badge = R.string.module_network_badge,
