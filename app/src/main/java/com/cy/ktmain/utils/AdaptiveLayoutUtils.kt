@@ -2,6 +2,7 @@ package com.cy.ktmain.utils
 
 import android.graphics.Rect
 import android.view.View
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 /**
@@ -38,9 +39,11 @@ fun WindowWidthSizeClass.gridSpanCount(
     WindowWidthSizeClass.EXPANDED -> expanded
 }
 
-/** 通用网格间距：列间距均匀分配，行间距固定，首行不加顶距。 */
+/**
+ * 通用网格间距：列间距均匀分配，行间距固定，首行不加顶距。
+ * 占满整行的 item（spanSize == spanCount）不加左右间距。
+ */
 class GridSpacingItemDecoration(
-    private val spanCount: Int,
     private val spacing: Int,
 ) : RecyclerView.ItemDecoration() {
 
@@ -50,15 +53,25 @@ class GridSpacingItemDecoration(
         parent: RecyclerView,
         state: RecyclerView.State,
     ) {
+        val layoutManager = parent.layoutManager as? GridLayoutManager ?: return
         val position = parent.getChildAdapterPosition(view)
         if (position == RecyclerView.NO_POSITION) return
 
-        val column = position % spanCount
-        val row = position / spanCount
+        val spanCount = layoutManager.spanCount
+        val spanSizeLookup = layoutManager.spanSizeLookup
+        val spanSize = spanSizeLookup.getSpanSize(position)
+        val row = spanSizeLookup.getSpanGroupIndex(position, spanCount)
 
-        outRect.left = spacing * column / spanCount
-        outRect.right = spacing * (spanCount - 1 - column) / spanCount
         outRect.top = if (row == 0) 0 else spacing
         outRect.bottom = 0
+
+        if (spanSize >= spanCount) {
+            outRect.left = 0
+            outRect.right = 0
+        } else {
+            val column = spanSizeLookup.getSpanIndex(position, spanCount)
+            outRect.left = spacing * column / spanCount
+            outRect.right = spacing * (spanCount - 1 - column) / spanCount
+        }
     }
 }

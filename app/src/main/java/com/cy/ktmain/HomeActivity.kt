@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.ColorRes
@@ -120,21 +121,19 @@ class HomeActivity : AppCompatActivity() {
             toolbar = findViewById(R.id.homeToolbar)
         )
 
-        findViewById<TextView>(R.id.readyCount).text =
-            modules.count { it.status == ModuleStatus.READY }.toString()
-        findViewById<TextView>(R.id.plannedCount).text =
-            modules.count { it.status == ModuleStatus.PLANNED }.toString()
-
         val container = findViewById<RecyclerView>(R.id.moduleContainer)
         val widthClass = WindowWidthSizeClass.fromWidthDp(resources.configuration.screenWidthDp)
         val spanCount = widthClass.gridSpanCount()
-        container.layoutManager = GridLayoutManager(this, spanCount)
-        container.adapter = ModuleAdapter(modules) { openModule(it) }
+        val footerPosition = modules.size + 1
+        val layoutManager = GridLayoutManager(this, spanCount)
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int =
+                if (position == HEADER_POSITION || position == footerPosition) spanCount else 1
+        }
+        container.layoutManager = layoutManager
+        container.adapter = HomeAdapter(modules) { openModule(it) }
         container.addItemDecoration(
-            GridSpacingItemDecoration(
-                spanCount,
-                resources.getDimensionPixelSize(R.dimen.module_grid_spacing)
-            )
+            GridSpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.module_grid_spacing))
         )
     }
 
@@ -148,12 +147,57 @@ class HomeActivity : AppCompatActivity() {
             .show()
     }
 
-    private class ModuleAdapter(
+    private class HomeAdapter(
         private val modules: List<LabModule>,
         private val onModuleClick: (LabModule) -> Unit
-    ) : RecyclerView.Adapter<ModuleAdapter.ViewHolder>() {
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        class ViewHolder(private val card: MaterialCardView) : RecyclerView.ViewHolder(card) {
+        private val footerPosition = modules.size + 1
+
+        override fun getItemViewType(position: Int): Int = when (position) {
+            0 -> TYPE_HEADER
+            footerPosition -> TYPE_FOOTER
+            else -> TYPE_MODULE
+        }
+
+        override fun getItemCount(): Int = modules.size + 2
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            val inflater = LayoutInflater.from(parent.context)
+            return when (viewType) {
+                TYPE_HEADER -> HeaderViewHolder(
+                    inflater.inflate(R.layout.item_home_header, parent, false)
+                )
+                TYPE_FOOTER -> FooterViewHolder(
+                    inflater.inflate(R.layout.item_home_footer, parent, false)
+                )
+                else -> ModuleViewHolder(
+                    inflater.inflate(R.layout.item_test_module, parent, false) as MaterialCardView
+                )
+            }
+        }
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            when (holder) {
+                is HeaderViewHolder -> holder.bind(modules)
+                is ModuleViewHolder -> holder.bind(modules[position - 1], onModuleClick)
+                is FooterViewHolder -> Unit
+            }
+        }
+
+        class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+            fun bind(modules: List<LabModule>) {
+                itemView.findViewById<TextView>(R.id.readyCount).text =
+                    modules.count { it.status == ModuleStatus.READY }.toString()
+                itemView.findViewById<TextView>(R.id.plannedCount).text =
+                    modules.count { it.status == ModuleStatus.PLANNED }.toString()
+            }
+        }
+
+        class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+        class ModuleViewHolder(private val card: MaterialCardView) : RecyclerView.ViewHolder(card) {
 
             fun bind(module: LabModule, onClick: (LabModule) -> Unit) {
                 card.findViewById<TextView>(R.id.moduleBadge).apply {
@@ -173,17 +217,11 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val card = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_test_module, parent, false) as MaterialCardView
-            return ViewHolder(card)
+        private companion object {
+            const val TYPE_HEADER = 0
+            const val TYPE_MODULE = 1
+            const val TYPE_FOOTER = 2
         }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(modules[position], onModuleClick)
-        }
-
-        override fun getItemCount(): Int = modules.size
     }
 
     private data class LabModule(
@@ -203,5 +241,9 @@ class HomeActivity : AppCompatActivity() {
     ) {
         READY(R.string.module_status_source, R.color.lab_accent_soft, R.color.lab_accent),
         PLANNED(R.string.module_status_planned, R.color.lab_planned_soft, R.color.lab_planned)
+    }
+
+    private companion object {
+        const val HEADER_POSITION = 0
     }
 }
