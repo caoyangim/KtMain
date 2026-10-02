@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.carousel.MaskableFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/maskableContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_margin="6dp"
+    app:shapeAppearance="?attr/shapeAppearanceCornerLarge">
+
+    <RelativeLayout
+        android:id="@+id/clmCardBackground"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:minWidth="280dp"
+        android:minHeight="220dp"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvClmIndex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:textColor="#CCFFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvClmTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/tvClmIndex"
+            android:background="@drawable/bg_card_ratio"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvClmTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvClmSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="#D0FFFFFF"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </RelativeLayout>
+</com.google.android.material.carousel.MaskableFrameLayout>

@@ -51,6 +51,14 @@
             android:exported="false" />
 
         <activity
+            android:name=".carousel.CarouselLayoutManagerActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".carousel.FoldableVPActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".HomeActivity"
             android:exported="true">
             <intent-filter>

@@ -43,7 +43,8 @@ class CarouselBannerView @JvmOverloads constructor(
 
     private val recyclerView = RecyclerView(context)
     private val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-    private val snapHelper = LinearSnapHelper()
+    // private val snapHelper = LinearSnapHelper()
+    private val snapHelper = StartSnapHelper()
 
     private val handler = Handler(Looper.getMainLooper())
     private var autoScrollRunnable: Runnable? = null
@@ -97,10 +98,6 @@ class CarouselBannerView @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         if (w <= 0) return
-        val itemWidth = (w * ITEM_WIDTH_PERCENT).toInt()
-        val horizontalPadding = (w - itemWidth) / 2
-        recyclerView.setPadding(horizontalPadding, 0, horizontalPadding, 0)
-        adapter.notifyDataSetChanged()
 
         post {
             if (currentPosition >= 0 && items.isNotEmpty()) {
@@ -266,7 +263,7 @@ class CarouselBannerView @JvmOverloads constructor(
 
         val n = items.size
         if (n > 1) {
-            val safeThreshold = n * 1000
+            val safeThreshold = 100
             if (pos < safeThreshold || pos > Int.MAX_VALUE - safeThreshold) {
                 val centerOffset = (Int.MAX_VALUE / 2) - ((Int.MAX_VALUE / 2) % n)
                 val realIndex = ((pos % n) + n) % n
@@ -440,5 +437,42 @@ class CarouselBannerView @JvmOverloads constructor(
         const val MIN_SCALE = 0.88f
         const val MAX_SCALE = 1.00f
         const val MIN_ALPHA = 0.85f
+    }
+}
+
+class StartSnapHelper : LinearSnapHelper() {
+
+    override fun calculateDistanceToFinalSnap(
+        layoutManager: RecyclerView.LayoutManager,
+        targetView: View
+    ): IntArray {
+        val out = IntArray(2)
+        // 计算目标 View 左边缘距离 RecyclerView paddingLeft 的距离
+        if (layoutManager.canScrollHorizontally()) {
+            out[0] = layoutManager.getDecoratedLeft(targetView) - layoutManager.paddingLeft
+        } else {
+            out[0] = 0
+        }
+        if (layoutManager.canScrollVertically()) {
+            out[1] = layoutManager.getDecoratedTop(targetView) - layoutManager.paddingTop
+        } else {
+            out[1] = 0
+        }
+        return out
+    }
+
+    override fun findSnapView(layoutManager: RecyclerView.LayoutManager): View? {
+        if (layoutManager !is LinearLayoutManager) return null
+
+        val firstVisiblePos = layoutManager.findFirstVisibleItemPosition()
+        if (firstVisiblePos == RecyclerView.NO_POSITION) return null
+
+        val firstView = layoutManager.findViewByPosition(firstVisiblePos) ?: return null
+        // 如果滑出超过自身一半，吸附到下一项；否则吸附回当前项
+        return if (firstView.right >= firstView.width / 2) {
+            firstView
+        } else {
+            layoutManager.findViewByPosition(firstVisiblePos + 1)
+        }
     }
 }
