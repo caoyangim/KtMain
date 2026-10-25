@@ -129,9 +129,14 @@ class CoverPublishFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        scope.cancel()
         coverPreview = null
         frameStrip = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // 与 SelectVideoFragment 同理：View 销毁不等于实例销毁，协程作用域等实例销毁时再取消。
+        scope.cancel()
     }
 
     companion object {

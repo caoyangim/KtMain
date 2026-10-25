@@ -6,7 +6,9 @@ import android.view.Surface
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.VideoSize
 import androidx.media3.exoplayer.ExoPlayer
+import kotlin.math.roundToInt
 
 /**
  * Default [VideoPlayer] backed by Media3 ExoPlayer.
@@ -27,6 +29,18 @@ class Media3VideoPlayer(context: Context) : VideoPlayer {
 
         override fun onPlayerError(error: PlaybackException) {
             listener?.onError(error.message ?: error.errorCodeName)
+        }
+
+        override fun onVideoSizeChanged(videoSize: VideoSize) {
+            val width = (videoSize.width * videoSize.pixelWidthHeightRatio)
+                .roundToInt().coerceAtLeast(1)
+            val height = videoSize.height.coerceAtLeast(1)
+            val rotation = videoSize.unappliedRotationDegrees
+            if (rotation == 90 || rotation == 270) {
+                listener?.onVideoSizeChanged(height, width)
+            } else {
+                listener?.onVideoSizeChanged(width, height)
+            }
         }
     }
 

@@ -33,5 +33,8 @@ interface VideoPlayer {
         fun onPrepared(durationMs: Long)
         fun onCompleted()
         fun onError(message: String)
+
+        /** 视频显示尺寸变化（已含像素宽高比与旋转校正），用于画面比例适配。默认空实现。 */
+        fun onVideoSizeChanged(widthPx: Int, heightPx: Int) {}
     }
 }

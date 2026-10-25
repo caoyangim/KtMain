@@ -87,12 +87,18 @@ class SelectVideoFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        scope.cancel()
         emptyContainer = null
         resultCard = null
         coverImage = null
         playButton = null
         deleteButton = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // 注意：replace+addToBackStack 只销毁 View 不销毁实例（返回栈返回时恢复同一实例），
+        // 协程作用域必须等实例销毁时才能取消，否则回选页后 onPicked 的协程会被静默丢弃。
+        scope.cancel()
     }
 
     private fun bindState() {
